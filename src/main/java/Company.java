@@ -1,48 +1,68 @@
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Company {
 
+    public int salary;
+
+    public Company(int salary) {
+        this.salary = salary;
+    }
+
     List<Employee> all = new ArrayList<>();
-    {
-        all.add(new Manager());
-        all.add(new Operator());
-        all.add(new TopManager());
+
+    public int count() {
+        return all.size();
     }
 
     public void hire(Employee employee) {
-        System.out.println("Найм одного сотрудника");
         all.add(employee);
-        int i = 0;
-        for(Employee em: all) {
-            System.out.println((++i) + " " + em);
-        }
     }
 
     public void hireAll(List<Employee> employees) {
-        System.out.println("Найм списка сотрудников");
         all.addAll(employees);
-        System.out.println(all);
     }
 
-    public void fire(int index) {
-        System.out.println("Увольнение сотрудников");
-        all.remove(index);
-        System.out.println(all);
+    public void fire(Employee employee) {
+        all.remove(employee);
     }
 
-    public void getIncome() {
-        System.out.println("Получение значения дохода компании");
-    }
-
-    public List<Employee> getTopSalaryStaff(int count) {
-        return null;
+    public static int getIncome() {
+        return 20000000;
     }
 
     public List<Employee> getLowestSalaryStaff(int count) {
-        return null;
+        List<Employee> f = new ArrayList<>();
+        List<Employee> a = all.stream().sorted(Comparator.comparing(employee -> employee.getMonthSalary(150000))).collect(Collectors.toList());
+        for (int i = 0; i < count; i++) {
+            f.add(a.get(i));
+        }
+        return f;
     }
+
+    public List<Employee> getTopSalaryStaff(int count) {
+
+        return getFilteredLimitedList(count, new Comparator<Employee>() {
+            public int compare(Employee o1, Employee o2) {
+                return o2.getMonthSalary(150000000) - o1.getMonthSalary(150000000);
+            }
+        });
+    }
+
+    private List<Employee> getFilteredLimitedList(int count, Comparator<Employee> comparator) {
+        List<Employee> copyList = new ArrayList<Employee>(all);
+        Collections.sort(copyList, comparator);
+        List<Employee> result = new ArrayList<Employee>();
+        for (int i = 0; i < count; i++) {
+            result.add(copyList.get(i));
+        }
+        return result;
+    }
+
 
 
 }
